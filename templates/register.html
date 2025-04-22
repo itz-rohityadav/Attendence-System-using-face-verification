@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Student | Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            font-weight: 700;
+            padding: 1rem 1.5rem;
+            border-bottom: none;
+            border-top-left-radius: 0.75rem !important;
+            border-top-right-radius: 0.75rem !important;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #224abe 0%, var(--primary-color) 100%);
+        }
+        
+        .btn-outline-secondary {
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .alert {
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .instructions {
+            background-color: rgba(78, 115, 223, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .instructions h5 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .instructions ul {
+            margin-bottom: 0;
+            padding-left: 1.5rem;
+        }
+        
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .photo-upload-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .photo-upload {
+            border: 2px dashed #ccc;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .photo-upload:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .photo-upload input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .photo-upload i {
+            font-size: 2rem;
+            color: #ccc;
+            margin-bottom: 0.5rem;
+        }
+        
+        .photo-upload .preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .photo-upload.has-image .preview {
+            display: block;
+        }
+        
+        .photo-upload.has-image .upload-icon,
+        .photo-upload.has-image .upload-text {
+            display: none;
+        }
+        
+        .photo-upload .remove-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+            color: #dc3545;
+            display: none;
+            z-index: 10;
+        }
+        
+        .photo-upload.has-image .remove-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .photo-upload .photo-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.25rem;
+            font-size: 0.8rem;
+        }
+        
+        .admin-auth {
+            background-color: rgba(231, 74, 59, 0.1);
+            border-left: 4px solid #e74a3b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .admin-auth h5 {
+            color: #e74a3b;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="h3 mb-0 text-gray-800">Register New Student</h1>
+            <div>
+                <a href="{{ url_for('sections') }}" class="btn btn-outline-primary btn-sm me-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Sections
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-sign-out-alt me-1"></i> Logout
+                </a>
+            </div>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-plus me-2"></i> Student Registration Form
+            </div>
+            <div class="card-body">
+                <div class="instructions">
+                    <h5><i class="fas fa-info-circle me-2"></i> Instructions</h5>
+                    <ul>
+                        <li>Fill in all the required student information</li>
+                        <li>Upload 4 different photos of the student's face from different angles</li>
+                        <li>Make sure the photos are clear and in good lighting</li>
+                        <li>The registration number must be unique and match their official ID</li>
+                        <li>Admin password is required to complete the registration</li>
+                    </ul>
+                </div>
+                
+                <form method="POST" action="{{ url_for('register_student') }}" enctype="multipart/form-data">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="registration_number" class="form-label">Registration Number*</label>
+                            <input type="text" class="form-control" id="registration_number" name="registration_number" required>
+                            <div class="form-text">Enter the unique student registration number</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="section" class="form-label">Section*</label>
+                            <select class="form-select" id="section" name="section" required>
+                                <option value="">Select a section</option>
+                                <option value="K22HU">K22HU</option>
+                                <option value="KO084">KO084</option>
+                                <option value="9R11K">9R11K</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Full Name*</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number*</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mt-4 mb-3">Student Photos (4 Required)</h5>
+                    <div class="photo-upload-container">
+                        <div class="photo-upload" id="photo-upload-1">
+                            <input type="file" name="photo1" accept="image/*" required onchange="previewImage(this, 1)">
+                            <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                            <div class="upload-text">Front Face Photo</div>
+                            <img class="preview" id="preview-1">
+                            <button type="button" class="remove-btn" onclick="removeImage(1)"><i class="fas fa-times"></i></button>
+                            <div class="photo-label">Front View</div>
+                        </div>
+                        
+                        <div class="photo-upload" id="photo-upload-2">
+                            <input type="file" name="photo2" accept="image/*" required onchange="previewImage(this, 2)">
+                            <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                            <div class="upload-text">Left Side Photo</div>
+                            <img class="preview" id="preview-2">
+                            <button type="button" class="remove-btn" onclick="removeImage(2)"><i class="fas fa-times"></i></button>
+                            <div class="photo-label">Left Side</div>
+                        </div>
+                        
+                        <div class="photo-upload" id="photo-upload-3">
+                            <input type="file" name="photo3" accept="image/*" required onchange="previewImage(this, 3)">
+                            <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                            <div class="upload-text">Right Side Photo</div>
+                            <img class="preview" id="preview-3">
+                            <button type="button" class="remove-btn" onclick="removeImage(3)"><i class="fas fa-times"></i></button>
+                            <div class="photo-label">Right Side</div>
+                        </div>
+                        
+                        <div class="photo-upload" id="photo-upload-4">
+                            <input type="file" name="photo4" accept="image/*" required onchange="previewImage(this, 4)">
+                            <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                            <div class="upload-text">Tilted Face Photo</div>
+                            <img class="preview" id="preview-4">
+                            <button type="button" class="remove-btn" onclick="removeImage(4)"><i class="fas fa-times"></i></button>
+                            <div class="photo-label">Tilted View</div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-auth">
+                        <h5><i class="fas fa-lock me-2"></i> Admin Authentication</h5>
+                        <p>Please enter your admin password to complete this registration</p>
+                        <div class="mb-3">
+                            <label for="admin_password" class="form-label">Admin Password*</label>
+                            <input type="password" class="form-control" id="admin_password" name="admin_password" required>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="reset" class="btn btn-outline-secondary me-2" onclick="resetForm()">
+                            <i class="fas fa-redo me-1"></i> Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Register Student
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Preview uploaded images
+        function previewImage(input, num) {
+            const preview = document.getElementById(`preview-${num}`);
+            const container = document.getElementById(`photo-upload-${num}`);
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    container.classList.add('has-image');
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        // Remove uploaded image
+        function removeImage(num) {
+            const input = document.querySelector(`#photo-upload-${num} input`);
+            const preview = document.getElementById(`preview-${num}`);
+            const container = document.getElementById(`photo-upload-${num}`);
+            
+            input.value = '';
+            preview.src = '';
+            container.classList.remove('has-image');
+        }
+        
+        // Reset the entire form including image previews
+        function resetForm() {
+            for (let i = 1; i <= 4; i++) {
+                removeImage(i);
+            }
+        }
+    </script>
+</body>
+</html>

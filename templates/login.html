@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin login for the Facial Recognition Attendance System">
+    <meta name="theme-color" content="#4e73df">
+    <title>Admin Login | Attendance System</title>
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- External CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+    
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --primary-dark: #224abe;
+            --primary-light: #6f8df7;
+            --secondary-color: #1cc88a;
+            --secondary-dark: #169b6b;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --border-radius: 1rem;
+            --box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .login-container {
+            max-width: 450px;
+            width: 100%;
+            padding: 1rem;
+            position: relative;
+        }
+        
+        .card {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            box-shadow: 0 0.75rem 2rem 0 rgba(58, 59, 69, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1.5rem 2rem;
+            border-bottom: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0.6;
+        }
+        
+        .logo {
+            width: 90px;
+            height: 90px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            position: relative;
+            z-index: 1;
+            transition: var(--transition);
+        }
+        
+        .logo:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+        
+        .logo i {
+            font-size: 2.75rem;
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .logo:hover i {
+            color: var(--primary-dark);
+        }
+        
+        .card-body {
+            padding: 2.5rem 2rem;
+            background-color: white;
+        }
+        
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-floating label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            border-radius: 0.5rem;
+            padding: 1rem 0.75rem;
+            border: 1px solid #e0e0e0;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            z-index: 10;
+            transition: var(--transition);
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary-color);
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.85rem;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 1.5rem;
+            box-shadow: 0 0.25rem 0.75rem rgba(78, 115, 223, 0.25);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 1rem rgba(78, 115, 223, 0.35);
+        }
+        
+        .btn-login:hover::before {
+            width: 100%;
+        }
+        
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 1.75rem;
+            color: var(--dark-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0.1rem 0.5rem rgba(0, 0, 0, 0.05);
+        }
+        
+        .back-link:hover {
+            color: var(--primary-color);
+            background-color: white;
+            box-shadow: 0 0.2rem 0.75rem rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .alert {
+            border-radius: 0.75rem;
+            margin-bottom: 1.75rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            border: none;
+        }
+        
+        .alert-icon {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .alert-danger {
+            background-color: rgba(231, 74, 59, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .alert-success {
+            background-color: rgba(28, 200, 138, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(246, 194, 62, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .form-check {
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-check-input {
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .form-check-label {
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        /* Accessibility focus styles */
+        a:focus, button:focus, input:focus, select:focus {
+            outline: 3px solid rgba(78, 115, 223, 0.5);
+            outline-offset: 2px;
+        }
+        
+        /* Loading animation */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .btn-loading span {
+            visibility: hidden;
+        }
+        
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 1.25rem;
+            height: 1.25rem;
+            top: calc(50% - 0.625rem);
+            left: calc(50% - 0.625rem);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spinner 0.6s linear infinite;
+        }
+        
+        @keyframes spinner {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Floating labels animation */
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label {
+            transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem);
+            color: var(--primary-color);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .card-header {
+                padding: 2rem 1rem 1.5rem;
+            }
+            
+            .card-body {
+                padding: 2rem 1.5rem;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .logo i {
+                font-size: 2.25rem;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #2c3e50 0%, #1a2530 100%);
+            }
+            
+            .card {
+                background-color: #2d3748;
+            }
+            
+            .card-body {
+                background-color: #2d3748;
+                color: #e2e8f0;
+            }
+            
+            .form-control {
+                background-color: #3a4a5e;
+                border-color: #4a5568;
+                color: #e2e8f0;
+            }
+            
+            .form-control:focus {
+                background-color: #3a4a5e;
+                color: #e2e8f0;
+            }
+            
+            .form-floating label {
+                color: #a0aec0;
+            }
+            
+            .form-check-label {
+                color: #a0aec0;
+            }
+            
+            .back-link {
+                background-color: rgba(45, 55, 72, 0.8);
+                color: #e2e8f0;
+            }
+            
+            .back-link:hover {
+                background-color: #3a4a5e;
+                color: var(--primary-light);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="card">
+            <div class="card-header">
+                <div class="logo">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3 class="mb-1">Admin Login</h3>
+                <p class="text-white-50">Access the attendance management system</p>
+            </div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert">
+                                <div class="alert-icon">
+                                    {% if category == 'success' %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% elif category == 'danger' %}
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    {% elif category == 'warning' %}
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div>{{ message }}</div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('login') }}" id="login-form">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Username" required autocomplete="username">
+                        <label for="username"><i class="fas fa-user me-2"></i>Username</label>
+                    </div>
+                    <div class="form-floating mb-3 password-container">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required autocomplete="current-password">
+                        <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
+                        <button type="button" class="password-toggle" id="password-toggle" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="remember-me" name="remember">
+                        <label class="form-check-label" for="remember-me">
+                            Remember me
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-login" id="login-button">
+                        <span><i class="fas fa-sign-in-alt me-2"></i> Login to Dashboard</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <a href="{{ url_for('index') }}" class="back-link">
+                <i class="fas fa-arrow-left me-2"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Password visibility toggle
+            const passwordToggle = document.getElementById('password-toggle');
+            const passwordInput = document.getElementById('password');
+            
+            passwordToggle.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+            
+            // Form submission with loading state
+            const loginForm = document.getElementById('login-form');
+            const loginButton = document.getElementById('login-button');
+            
+            loginForm.addEventListener('submit', function(e) {
+                // Add loading state to button
+                loginButton.classList.add('btn-loading');
+            });
+            
+            // Focus the username field on page load
+            document.getElementById('username').focus();
+        });
+    </script>
+</body>
+</html>

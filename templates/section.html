@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Attendance System - Select a section to mark attendance">
+    <title>Select Section | Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --primary-dark: #224abe;
+            --secondary-color: #1cc88a;
+            --secondary-dark: #169a6c;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+            --danger-color: #e74a3b;
+            --danger-dark: #be3c30;
+            --warning-color: #f6c23e;
+            --info-color: #36b9cc;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+        
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section-card {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            height: 100%;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.25);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            font-weight: 700;
+            padding: 1rem 1.5rem;
+            border-bottom: none;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+        
+        .section-card:hover .section-icon {
+            transform: scale(1.1);
+        }
+        
+        .btn-select-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+        
+        .btn-select-section:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-info {
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        .current-time {
+            font-size: 1.1rem;
+            color: var(--dark-color);
+            margin-bottom: 2rem;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        }
+        
+        .current-class {
+            background-color: rgba(28, 200, 138, 0.1);
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        }
+        
+        .logout-btn {
+            color: var(--danger-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+        
+        .logout-btn:hover {
+            color: var(--danger-dark);
+            background-color: rgba(231, 74, 59, 0.1);
+        }
+        
+        .section-badge {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.8rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 0.5rem;
+            margin-left: 0.5rem;
+        }
+        
+        .class-details {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .detail-icon {
+            width: 24px;
+            margin-right: 0.75rem;
+            color: var(--secondary-color);
+        }
+        
+        .quick-action-btn {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            height: 100%;
+        }
+        
+        .quick-action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-outline-success {
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-outline-success:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-outline-info {
+            color: var(--info-color);
+            border-color: var(--info-color);
+        }
+        
+        .btn-outline-info:hover {
+            background-color: var(--info-color);
+            color: white;
+        }
+        
+        .student-count {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        
+        .department-badge {
+            display: inline-block;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            background-color: rgba(78, 115, 223, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .active-section {
+            position: relative;
+        }
+        
+        .active-section::after {
+            content: "Current";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--secondary-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            z-index: 10;
+        }
+        
+        .welcome-user {
+            background-color: rgba(78, 115, 223, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .section-container {
+                padding: 1rem;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .quick-action-btn {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="section-container">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-chalkboard me-2"></i>Select Section
+            </h1>
+            <div>
+                <span class="welcome-user me-3">
+                    <i class="fas fa-user-circle me-1"></i> Welcome, Admin
+                </span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt me-1"></i> Logout
+                </a>
+            </div>
+        </div>
+        
+        <div class="current-time text-center">
+            <div class="row">
+                <div class="col-md-6">
+                    <i class="far fa-clock me-2"></i> Current Time: <strong>{{ current_time }}</strong>
+                </div>
+                <div class="col-md-6">
+                    <i class="far fa-calendar-alt me-2"></i> <strong>{{ current_day }}</strong>
+                </div>
+            </div>
+        </div>
+        
+        {% if current_class %}
+        <div class="current-class">
+            <h5 class="mb-3"><i class="fas fa-chalkboard-teacher me-2"></i> Current Class in Session:</h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="class-details">
+                        <i class="fas fa-book detail-icon"></i>
+                        <span>{{ current_class.class }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="class-details">
+                        <i class="fas fa-map-marker-alt detail-icon"></i>
+                        <span>{{ current_class.room }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="class-details">
+                        <i class="fas fa-users detail-icon"></i>
+                        <span>{{ current_class.section }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info mb-4">
+            <i class="fas fa-info-circle me-2"></i> There is no class currently in session according to the schedule.
+        </div>
+        {% endif %}
+        
+        <div class="row g-4">
+            <!-- K22HU Section Card -->
+            <div class="col-md-4">
+                <div class="card section-card {% if current_class and 'K22HU' in current_class.section %}active-section{% endif %}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">K22HU Section</h5>
+                        <span class="section-badge">CSE</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="section-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <span class="department-badge">Computer Science Engineering</span>
+                        <div class="section-info">
+                            <p class="mb-2">Total Students: <span class="student-count">{{ k22hu_count }}</span></p>
+                            <p class="text-muted small">Last updated: Today</p>
+                        </div>
+                        <a href="{{ url_for('select_section', section='K22HU') }}" class="btn btn-primary btn-select-section w-100">
+                            <i class="fas fa-clipboard-check me-2"></i> Mark Attendance
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- KO084 Section Card -->
+            <div class="col-md-4">
+                <div class="card section-card {% if current_class and 'KO084' in current_class.section %}active-section{% endif %}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">KO084 Section</h5>
+                        <span class="section-badge">PSY</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="section-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <span class="department-badge">Psychology Department</span>
+                        <div class="section-info">
+                            <p class="mb-2">Total Students: <span class="student-count">{{ ko084_count }}</span></p>
+                            <p class="text-muted small">Last updated: Today</p>
+                        </div>
+                        <a href="{{ url_for('select_section', section='KO084') }}" class="btn btn-primary btn-select-section w-100">
+                            <i class="fas fa-clipboard-check me-2"></i> Mark Attendance
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 9R11K Section Card -->
+            <div class="col-md-4">
+                <div class="card section-card {% if current_class and '9R11K' in current_class.section %}active-section{% endif %}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">9R11K Section</h5>
+                        <span class="section-badge">PLC</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="section-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <span class="department-badge">Placement</span>
+                        <div class="section-info">
+                            <p class="mb-2">Total Students: <span class="student-count">{{ r11k_count }}</span></p>
+                            <p class="text-muted small">Last updated: Today</p>
+                        </div>
+                        <a href="{{ url_for('select_section', section='9R11K') }}" class="btn btn-primary btn-select-section w-100">
+                            <i class="fas fa-clipboard-check me-2"></i> Mark Attendance
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card section-card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <a href="{{ url_for('register_student') }}" class="btn btn-outline-primary w-100 quick-action-btn">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span>Register New Student</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{{ url_for('view_attendance') }}" class="btn btn-outline-success w-100 quick-action-btn">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <span>View Attendance Reports</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="#" class="btn btn-outline-info w-100 quick-action-btn">
+                                    <i class="fas fa-cog"></i>
+                                    <span>System Settings</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="mt-5 text-center text-muted">
+            <p class="small">Facial Recognition Attendance System. All Rights Reserved</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update current time every second
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString();
+                const timeElement = document.querySelector('.current-time strong:first-child');
+                if (timeElement) {
+                    timeElement.textContent = timeString;
+                }
+            }
+            
+            // Initial call and set interval
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Add animation to section cards
+            const sectionCards = document.querySelectorAll('.section-card');
+            sectionCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+            
+            // Highlight current section based on current class if needed
+            {% if current_class %}
+                const currentSection = "{{ current_class.section }}".replace('S:', '');
+                const sectionCards = document.querySelectorAll('.section-card');
+                sectionCards.forEach(card => {
+                    if (card.querySelector('.card-header').textContent.includes(currentSection)) {
+                        card.classList.add('active-section');
+                    }
+                });
+            {% endif %}
+        });
+    </script>
+</body>
+</html>
