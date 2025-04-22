@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Facial Recognition Attendance System - Mark your attendance with just a scan of your face">
+    <meta name="theme-color" content="#007bff">
+    <title>Facial Recognition Attendance System</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://stackpath.bootstrapcdn.com">
+    <link rel="preconnect" href="https://code.jquery.com">
+    <link rel="preload" href="{{ url_for('static', filename='img/logo.png') }}" as="image">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-dark: #0069d9;
+            --secondary: #6c757d;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--light);
+            font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .jumbotron {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 3rem;
+            margin-bottom: 0;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .jumbotron:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            max-width: 180px;
+            height: auto;
+            transition: var(--transition);
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        h1 {
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+        
+        .lead {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .divider {
+            height: 3px;
+            width: 70px;
+            background-color: var(--primary);
+            margin: 2rem auto;
+            border-radius: 3px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-primary:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: var(--primary-dark);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+            transform: translateY(-3px);
+        }
+        
+        .btn-primary:hover:before {
+            width: 100%;
+        }
+        
+        .btn-primary:focus {
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.5);
+        }
+        
+        .btn-primary i {
+            margin-left: 8px;
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 2rem 0;
+            gap: 1.5rem;
+        }
+        
+        .feature {
+            flex: 1 1 200px;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-text {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        .footer-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+        
+        /* Accessibility */
+        .btn:focus, a:focus {
+            outline: 3px solid rgba(0, 123, 255, 0.5);
+            outline-offset: 2px;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animated {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .jumbotron {
+                padding: 2rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .lead {
+                font-size: 1.1rem;
+            }
+            
+            .features {
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .jumbotron {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .logo {
+                max-width: 140px;
+            }
+            
+            .btn-primary {
+                width: 100%;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --light: #1a1a1a;
+                --dark: #f8f9fa;
+                --white: #2d2d2d;
+                --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            }
+            
+            .lead, .feature-text, .footer-text {
+                color: #b0b0b0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron text-center">
+            <div class="logo-container animated">
+                <picture>
+                    <!-- WebP format for modern browsers -->
+                    <source srcset="{{ url_for('static', filename='img/logo.webp') }}" type="image/webp">
+                    <!-- Original PNG as fallback -->
+                    <img 
+                        src="{{ url_for('static', filename='img/logo.png') }}" 
+                        alt="Facial Recognition Attendance System Logo" 
+                        class="logo"
+                        width="180"
+                        height="auto"
+                        loading="eager"
+                        fetchpriority="high"
+                        onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/logo-fallback.png') }}'"
+                    >
+                </picture>
+            </div>
+            
+            <h1 class="animated delay-1">Facial Recognition Attendance System</h1>
+            <p class="lead animated delay-1">Welcome to the automated attendance tracking system. Mark your attendance with just a scan of your face!</p>
+            
+            <div class="divider animated delay-2"></div>
+            
+            <div class="features animated delay-2">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">Fast & Efficient</h3>
+                    <p class="feature-text">Mark attendance in seconds with our advanced facial recognition technology</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Secure</h3>
+                    <p class="feature-text">Your biometric data is encrypted and securely stored</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Analytics</h3>
+                    <p class="feature-text">Track attendance patterns with detailed reports</p>
+                </div>
+            </div>
+            
+            <p class="animated delay-3">Ready to mark your attendance? Click the button below to get started.</p>
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg animated delay-3" aria-label="Mark your attendance">
+                MARK YOUR ATTENDANCE <i class="fas fa-arrow-right"></i>
+            </a>
+            
+            <p class="footer-text animated delay-3">© {{ current_year }} Facial Recognition Attendance System. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous" defer></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous" defer></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous" defer></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    
+    <script>
+        // Check if the browser supports service workers
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+        
+        // Simple animation to show content is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.animated').forEach(element => {
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

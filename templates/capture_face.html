@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Facial recognition attendance system for {{ section }} section">
+    <title>Mark Attendance | {{ section }} Section</title>
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- External CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --primary-dark: #3a5ccc;
+            --secondary-color: #1cc88a;
+            --secondary-dark: #169b6b;
+            --danger-color: #e74a3b;
+            --danger-dark: #c13b2d;
+            --warning-color: #f6c23e;
+            --warning-dark: #e0b02c;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+            --border-radius: 0.75rem;
+            --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--dark-color);
+        }
+        
+        .page-header {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .camera-container {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            background-color: #000;
+            height: calc(100vh - 200px);
+            min-height: 400px;
+            transition: var(--transition);
+        }
+        
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1rem;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.5) 0%,
+                rgba(0,0,0,0) 30%,
+                rgba(0,0,0,0) 70%,
+                rgba(0,0,0,0.5) 100%
+            );
+            color: white;
+            pointer-events: none;
+        }
+        
+        .camera-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .camera-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .scan-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .scan-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            margin-right: 8px;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+        
+        .face-box {
+            position: absolute;
+            border: 2px solid var(--secondary-color);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .attendance-list {
+            height: calc(100vh - 200px);
+            min-height: 400px;
+            overflow-y: auto;
+            border-radius: var(--border-radius);
+            background-color: white;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .attendance-header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        .student-card {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
+        
+        .student-card:hover {
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+        
+        .student-card.new-entry {
+            animation: highlightNew 2s ease;
+        }
+        
+        @keyframes highlightNew {
+            0% { background-color: rgba(28, 200, 138, 0.2); }
+            100% { background-color: transparent; }
+        }
+        
+        .student-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .student-details {
+            flex-grow: 1;
+        }
+        
+        .student-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+            color: var(--dark-color);
+        }
+        
+        .student-id {
+            color: var(--dark-color);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .timestamp {
+            font-size: 0.8rem;
+            color: var(--dark-color);
+            text-align: right;
+            opacity: 0.7;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        .present {
+            background-color: rgba(28, 200, 138, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .controls {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-control {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .btn-stop {
+            background-color: var(--danger-color);
+            border: none;
+            color: white;
+        }
+        
+        .btn-stop:hover {
+            background-color: var(--danger-dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-manual {
+            background-color: var(--warning-color);
+            border: none;
+            color: #5a5c69;
+        }
+        
+        .btn-manual:hover {
+            background-color: var(--warning-dark);
+            color: #5a5c69;
+            transform: translateY(-2px);
+        }
+        
+        .class-info {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .class-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .class-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+        }
+        
+        .detail-icon {
+            color: var(--primary-color);
+        }
+        
+        .recognition-status {
+            position: absolute;
+            bottom: 4rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .recognition-status.show {
+            opacity: 1;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+        
+        .stat {
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            opacity: 0.7;
+        }
+        
+        .camera-error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            max-width: 80%;
+        }
+        
+        .camera-error-icon {
+            font-size: 3rem;
+            color: var(--danger-color);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 2rem;
+            text-align: center;
+            color: var(--dark-color);
+            opacity: 0.7;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            opacity: 0.3;
+        }
+        
+        /* Accessibility focus styles */
+        a:focus, button:focus, input:focus, select:focus {
+            outline: 3px solid rgba(78, 115, 223, 0.5);
+            outline-offset: 2px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .camera-container, .attendance-list {
+                height: 50vh;
+                min-height: 300px;
+                margin-bottom: 1rem;
+            }
+            
+            .class-details {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .camera-header, .camera-footer {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0 text-gray-800">Mark Attendance: {{ section }} Section</h1>
+            <div>
+                <a href="{{ url_for('sections') }}" class="btn btn-outline-primary btn-sm me-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Sections
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-sign-out-alt me-1"></i> Logout
+                </a>
+            </div>
+        </div>
+        
+        {% if current_class %}
+        <div class="class-info">
+            <h5 class="mb-2"><i class="fas fa-chalkboard-teacher me-2"></i> Current Class</h5>
+            <div class="class-details">
+                <div class="class-detail">
+                    <i class="fas fa-book detail-icon"></i>
+                    <span>{{ current_class.class }}</span>
+                </div>
+                <div class="class-detail">
+                    <i class="fas fa-map-marker-alt detail-icon"></i>
+                    <span>{{ current_class.room }}</span>
+                </div>
+                <div class="class-detail">
+                    <i class="fas fa-users detail-icon"></i>
+                    <span>{{ current_class.section }}</span>
+                </div>
+                <div class="class-detail">
+                    <i class="fas fa-clock detail-icon"></i>
+                    <span id="current-time-display">{{ current_time }}</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="row">
+            <!-- Camera Feed (Left Half) -->
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="camera-container">
+                    <video id="video" autoplay playsinline></video>
+                    <div class="camera-overlay">
+                        <div class="camera-header">
+                            <div class="scan-indicator">
+                                <div class="scan-dot"></div>
+                                <span>Scanning for faces...</span>
+                            </div>
+                            <div class="camera-status">
+                                <span id="fps">0 FPS</span>
+                            </div>
+                        </div>
+                        <div class="camera-footer">
+                            <div class="recognition-count">
+                                <span id="recognized-count">0</span> recognized
+                            </div>
+                            <div class="camera-time">
+                                <span id="current-time">00:00:00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="recognition-status" class="recognition-status">Recognizing...</div>
+                    
+                    <!-- Camera error message (hidden by default) -->
+                    <div id="camera-error" class="camera-error" style="display: none;">
+                        <div class="camera-error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h5 class="mb-3">Camera Access Error</h5>
+                        <p class="mb-3">Unable to access your camera. Please ensure camera permissions are granted and no other application is using the camera.</p>
+                        <button id="retry-camera" class="btn btn-light">
+                            <i class="fas fa-redo me-2"></i> Retry
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="stop-btn" class="btn btn-control btn-stop">
+                        <i class="fas fa-stop-circle"></i> Stop Attendance
+                    </button>
+                    <button id="manual-btn" class="btn btn-control btn-manual" data-bs-toggle="modal" data-bs-target="#manualModal">
+                        <i class="fas fa-user-plus"></i> Add Manually
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Attendance List (Right Half) -->
+            <div class="col-lg-6">
+                <div class="attendance-list">
+                    <div class="attendance-header">
+                        <h5 class="mb-0">Present Students</h5>
+                        <div class="stats">
+                            <div class="stat">Total: <span id="total-count">0</span> students</div>
+                            <div class="stat">Last update: <span id="last-update">--:--:--</span></div>
+                        </div>
+                    </div>
+                    <div id="students-container">
+                        <!-- Empty state message -->
+                        <div id="empty-state" class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <h5>No Students Recognized Yet</h5>
+                            <p>Students will appear here once they are recognized by the system.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        <!-- Manual Attendance Modal -->
+        <div class="modal fade" id="manualModal" tabindex="-1" aria-labelledby="manualModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="manualModalLabel">Add Student Manually</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="manual-form">
+                            <div class="mb-3">
+                                <label for="student-id" class="form-label">Student ID</label>
+                                <input type="text" class="form-control" id="student-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="student-name" class="form-label">Student Name</label>
+                                <input type="text" class="form-control" id="student-name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="student-section" class="form-label">Section</label>
+                                <select class="form-select" id="student-section" required>
+                                    <option value="K22HU" {% if section == 'K22HU' %}selected{% endif %}>K22HU</option>
+                                    <option value="KO084" {% if section == 'KO084' %}selected{% endif %}>KO084</option>
+                                    <option value="9R11K" {% if section == '9R11K' %}selected{% endif %}>9R11K</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="manual-reason" class="form-label">Reason for Manual Entry</label>
+                                <select class="form-select" id="manual-reason" required>
+                                    <option value="">Select a reason...</option>
+                                    <option value="Face not recognized">Face not recognized by system</option>
+                                    <option value="Camera issues">Camera/hardware issues</option>
+                                    <option value="Student without photo ID">Student without photo ID</option>
+                                    <option value="System error">System error</option>
+                                    <option value="Other">Other (specify below)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" id="other-reason-container" style="display: none;">
+                                <label for="other-reason" class="form-label">Specify Other Reason</label>
+                                <textarea class="form-control" id="other-reason" rows="2"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="add-manual-btn">Add Student</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Authentication Modal -->
+        <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="authModalLabel">Authentication Required</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Multiple manual entries require administrator authentication
+                        </div>
+                        <form id="auth-form">
+                            <div class="mb-3">
+                                <label for="admin-username" class="form-label">Admin Username</label>
+                                <input type="text" class="form-control" id="admin-username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="admin-password" class="form-label">Admin Password</label>
+                                <input type="password" class="form-control" id="admin-password" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="auth-submit-btn">Authenticate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Toast Notifications -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span id="successToastMessage">Operation completed successfully!</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+            
+            <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <span id="errorToastMessage">An error occurred. Please try again.</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+        <script>
+            // Global variables
+            let video = document.getElementById('video');
+            let studentsContainer = document.getElementById('students-container');
+            let emptyState = document.getElementById('empty-state');
+            let recognizedCount = document.getElementById('recognized-count');
+            let totalCount = document.getElementById('total-count');
+            let lastUpdate = document.getElementById('last-update');
+            let currentTimeDisplay = document.getElementById('current-time');
+            let fpsDisplay = document.getElementById('fps');
+            let recognitionStatus = document.getElementById('recognition-status');
+            let stopBtn = document.getElementById('stop-btn');
+            let manualBtn = document.getElementById('manual-btn');
+            let addManualBtn = document.getElementById('add-manual-btn');
+            let cameraError = document.getElementById('camera-error');
+            let retryCamera = document.getElementById('retry-camera');
+            
+            // Toast elements
+            const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+            const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+            
+            // Store recognized students
+            let recognizedStudents = [];
+            let frameCount = 0;
+            let lastFpsUpdate = Date.now();
+            let manualAttempts = 0;
+            let isAuthenticated = false;
+            
+            // Show success message
+            function showSuccess(message) {
+                document.getElementById('successToastMessage').textContent = message;
+                successToast.show();
+            }
+            
+            // Show error message
+            function showError(message) {
+                document.getElementById('errorToastMessage').textContent = message;
+                errorToast.show();
+            }
+            
+            // Initialize camera
+            async function initCamera() {
+                try {
+                    cameraError.style.display = 'none';
+                    
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 },
+                            facingMode: "user"
+                        } 
+                    });
+                    video.srcObject = stream;
+                    
+                    // Start face detection simulation
+                    startFaceDetection();
+                    
+                    // Update current time
+                    updateCurrentTime();
+                    setInterval(updateCurrentTime, 1000);
+                    
+                    // Update FPS counter
+                    setInterval(updateFPS, 1000);
+                    
+                    showSuccess("Camera initialized successfully");
+                } catch (err) {
+                    console.error("Error accessing camera:", err);
+                    cameraError.style.display = 'block';
+                    showError("Failed to access camera");
+                }
+            }
+            
+            // Update current time display
+            function updateCurrentTime() {
+                const now = new Date();
+                currentTimeDisplay.textContent = now.toLocaleTimeString();
+            }
+            
+            // Update FPS counter
+            function updateFPS() {
+                const now = Date.now();
+                const elapsed = now - lastFpsUpdate;
+                const fps = Math.round((frameCount / elapsed) * 1000);
+                fpsDisplay.textContent = `${fps} FPS`;
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+            
+            // Start face detection
+            function startFaceDetection() {
+                // In a real implementation, this would connect to a face detection API
+                // For this demo, we'll just simulate frame processing
+                setInterval(() => {
+                    frameCount++;
+                }, 16); // ~60fps
+            }
+            
+            // Show recognition status message
+            function showRecognitionStatus() {
+                recognitionStatus.textContent = "Recognizing...";
+                recognitionStatus.classList.add("show");
+                
+                setTimeout(() => {
+                    recognitionStatus.classList.remove("show");
+                }, 1500);
+            }
+            
+            // Simulate drawing a face box
+            function drawFaceBox() {
+                // Create a face box element
+                const faceBox = document.createElement("div");
+                faceBox.className = "face-box";
+                
+                // Random position within the video
+                const videoWidth = video.offsetWidth;
+                const videoHeight = video.offsetHeight;
+                
+                const width = Math.floor(Math.random() * 100) + 100; // 100-200px
+                const height = Math.floor(Math.random() * 100) + 100; // 100-200px
+                
+                const left = Math.floor(Math.random() * (videoWidth - width));
+                const top = Math.floor(Math.random() * (videoHeight - height));
+                
+                faceBox.style.width = `${width}px`;
+                faceBox.style.height = `${height}px`;
+                faceBox.style.left = `${left}px`;
+                faceBox.style.top = `${top}px`;
+                
+                // Add to camera container
+                document.querySelector(".camera-container").appendChild(faceBox);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    faceBox.remove();
+                }, 2000);
+            }
+            
+            // Update the list of recognized students
+            function updateRecognizedStudents(student) {
+                // Hide empty state if this is the first student
+                if (recognizedStudents.length === 1) {
+                    emptyState.style.display = 'none';
+                }
+                
+                // Create student card
+                const studentCard = document.createElement("div");
+                studentCard.className = "student-card new-entry";
+                
+                // Determine if this is a manual entry
+                const isManual = student.manual === true;
+                const avatarColor = isManual ? 'style="background-color: var(--warning-color);"' : '';
+                const manualBadge = isManual ? '<span class="badge bg-warning text-dark ms-1">Manual</span>' : '';
+                
+                studentCard.innerHTML = `
+                    <div class="student-info">
+                        <div class="student-avatar" ${avatarColor}>${student.name.charAt(0)}</div>
+                        <div class="student-details">
+                            <div class="student-name">
+                                ${student.name} 
+                                <span class="status-badge present">Present</span>
+                                ${manualBadge}
+                            </div>
+                            <div class="student-id">${student.id} • ${student.section}</div>
+                        </div>
+                    </div>
+                    <div class="timestamp">
+                        <i class="far fa-clock me-1"></i> ${student.timestamp}
+                    </div>
+                `;
+                
+                // Insert at the beginning
+                studentsContainer.insertBefore(studentCard, studentsContainer.firstChild);
+                
+                // Update counters
+                recognizedCount.textContent = recognizedStudents.length;
+                totalCount.textContent = recognizedStudents.length;
+                lastUpdate.textContent = student.timestamp;
+            }
+            
+            // Handle stop button
+            stopBtn.addEventListener('click', function() {
+                if (confirm("Are you sure you want to stop taking attendance?")) {
+                    // Stop video stream
+                    if (video.srcObject) {
+                        const tracks = video.srcObject.getTracks();
+                        tracks.forEach(track => track.stop());
+                    }
+                    
+                    // Redirect to attendance summary
+                    window.location.href = "{{ url_for('view_attendance') }}";
+                }
+            });
+            
+            // Handle manual attendance button
+            manualBtn.addEventListener('click', function() {
+                // Reset the form
+                document.getElementById('student-id').value = '';
+                document.getElementById('student-name').value = '';
+                document.getElementById('manual-reason').value = '';
+                document.getElementById('other-reason').value = '';
+                document.getElementById('other-reason-container').style.display = 'none';
+                
+                // Check if authentication is required
+                if (manualAttempts > 0 && !isAuthenticated) {
+                    // Show authentication modal instead
+                    const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+                    authModal.show();
+                    return;
+                }
+            });
+            
+            // Handle reason selection change
+            document.getElementById('manual-reason').addEventListener('change', function() {
+                const otherContainer = document.getElementById('other-reason-container');
+                if (this.value === 'Other') {
+                    otherContainer.style.display = 'block';
+                } else {
+                    otherContainer.style.display = 'none';
+                }
+            });
+            
+            // Handle authentication submit
+            document.getElementById('auth-submit-btn').addEventListener('click', function() {
+                const username = document.getElementById('admin-username').value;
+                const password = document.getElementById('admin-password').value;
+                
+                if (!username || !password) {
+                    showError("Please enter both username and password");
+                    return;
+                }
+                
+                // In a real app, you would verify these credentials against a server
+                // For demo purposes, we'll use a simple check
+                if (username === "admin" && password === "password") {
+                    isAuthenticated = true;
+                    
+                    // Close auth modal
+                    const authModal = bootstrap.Modal.getInstance(document.getElementById('authModal'));
+                    authModal.hide();
+                    
+                    // Open manual entry modal
+                    const manualModal = new bootstrap.Modal(document.getElementById('manualModal'));
+                    manualModal.show();
+                    
+                    showSuccess("Authentication successful");
+                } else {
+                    showError("Invalid credentials");
+                }
+            });
+            
+            // Handle add manual student button
+            addManualBtn.addEventListener('click', function() {
+                const studentId = document.getElementById('student-id').value;
+                const studentName = document.getElementById('student-name').value;
+                const studentSection = document.getElementById('student-section').value;
+                const manualReason = document.getElementById('manual-reason').value;
+                const otherReason = document.getElementById('other-reason').value;
+                
+                // Validate form
+                if (!studentId || !studentName || !studentSection || !manualReason) {
+                    showError("Please fill in all required fields");
+                    return;
+                }
+                
+                if (manualReason === 'Other' && !otherReason) {
+                    showError("Please specify the other reason");
+                    return;
+                }
+                
+                // Get the final reason text
+                const finalReason = manualReason === 'Other' ? otherReason : manualReason;
+                
+                // Create the student object
+                const now = new Date();
+                const student = {
+                    id: studentId,
+                    name: studentName,
+                    section: studentSection,
+                    timestamp: now.toLocaleTimeString(),
+                    manual: true,
+                    reason: finalReason
+                };
+                
+                // Add to recognized list
+                recognizedStudents.push(student);
+                
+                // Update UI
+                updateRecognizedStudents(student);
+                
+                // Increment manual attempts counter
+                manualAttempts++;
+                
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('manualModal'));
+                modal.hide();
+                
+                // Show success message
+                showSuccess("Student added manually");
+                
+                // In a real app, you would save this to the server
+                console.log("Manual attendance recorded:", student);
+            });
+            
+            // Handle retry camera button
+            retryCamera.addEventListener('click', function() {
+                initCamera();
+            });
+            
+            // Initialize when page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize camera
+                initCamera();
+            });
+        </script>
+    </body>
+    </html>
