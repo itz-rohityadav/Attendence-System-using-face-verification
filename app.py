@@ -7,9 +7,7 @@ import datetime
 import pickle
 import time
 import shutil
-import base64
 from werkzeug.utils import secure_filename
-from tensorflow.keras.models import load_model
 
 app = Flask(__name__)
 app.secret_key = "attendance_system_secret_key"
@@ -57,14 +55,6 @@ schedule = {
     }
 }
 
-# Load the trained model
-try:
-    face_recognition_model = load_model('database/user_recognition_model.h5')
-    print("Face recognition model loaded successfully")
-except Exception as e:
-    print(f"Error loading face recognition model: {e}")
-    face_recognition_model = None
-
 # Database functions
 def load_users():
     try:
@@ -87,73 +77,6 @@ def load_attendance():
 def save_attendance(attendance):
     with open('database/attendance_records.json', 'w') as f:
         json.dump(attendance, f, indent=4)
-
-# Face recognition functions
-def preprocess_face_image(image, target_size=(224, 224)):
-    """
-    Preprocess an image for the face recognition model.
-    Assumes the image is already a face crop.
-    """
-    # Resize to the target size expected by the model
-    image = cv2.resize(image, target_size)
-    
-    # Convert to RGB if it's BGR (OpenCV default)
-    if len(image.shape) == 3 and image.shape[2] == 3:
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    
-    # Normalize pixel values
-    image = image.astype('float32')
-    image /= 255.0
-    
-    # Add batch dimension
-    image = np.expand_dims(image, axis=0)
-    
-    return image
-
-def detect_and_recognize_face(image):
-    """
-    Detect faces in an image and recognize them using the trained model.
-    Returns the student ID if recognized, None otherwise.
-    """
-    if face_recognition_model is None:
-        print("Face recognition model not loaded")
-        return None
-    
-    # Detect face in the image
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-    
-    if len(faces) == 0:
-        print("No face detected in the image")
-        return None
-    
-    # Process the first face found
-    x, y, w, h = faces[0]
-    face_crop = image[y:y+h, x:x+w]
-    
-    # Preprocess for the model
-    processed_face = preprocess_face_image(face_crop)
-    
-    # Get prediction from model
-    prediction = face_recognition_model.predict(processed_face)
-    
-    # Map prediction to student IDs
-    # Assuming the model outputs probabilities for each class
-    # and classes are in order: [12206751, 12219638]
-    student_ids = ['12206751', '12219638']
-    
-    # Get the index of the highest probability
-    predicted_class = np.argmax(prediction[0])
-    confidence = prediction[0][predicted_class]
-    
-    print(f"Prediction: {prediction[0]}, Predicted class: {predicted_class}, Confidence: {confidence}")
-    
-    # Only return a match if confidence is high enough
-    if confidence > 0.7:  # Adjust threshold as needed
-        return student_ids[predicted_class]
-    else:
-        return None
 
 # Helper functions
 def get_current_day_time():
@@ -318,76 +241,37 @@ def mark_attendance(class_id):
 @app.route('/process_attendance', methods=['POST'])
 def process_attendance():
     if not session.get('logged_in'):
-        return jsonify({'success': False, 'message': 'Not logged in'}), 401
+        return redirect(url_for('login'))
     
     # Get data from request
     data = request.get_json()
+    student_id = data.get('student_id')
+    section = data.get('section')
     
-    if not data or 'image_data' not in data:
-        return jsonify({'success': False, 'message': 'Missing image data'}), 400
+    if not student_id or not section:
+        return jsonify({'success': False, 'message': 'Missing data'}), 400
     
-    try:
-        # Decode base64 image
-        image_data = data['image_data']
-        # Remove the "data:image/jpeg;base64," part if present
-        if ',' in image_data:
-            image_data = image_data.split(',')[1]
-        
-        # Convert base64 to image
-        image_bytes = base64.b64decode(image_data)
-        np_arr = np.frombuffer(image_bytes, np.uint8)
-        image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-        
-        if image is None:
-            return jsonify({'success': False, 'message': 'Failed to decode image'}), 400
-        
-        # Recognize the face
-        student_id = detect_and_recognize_face(image)
-        
-        if student_id:
-            # Get student info
-            users = load_users()
-            if student_id in users:
-                student_name = users[student_id]['name']
-                section = users[student_id]['section']
-                
-                # Record attendance
-                attendance = load_attendance()
-                today = datetime.datetime.now().strftime('%Y-%m-%d')
-                current_class = get_current_class()
-                
-                if not current_class:
-                    return jsonify({'success': False, 'message': 'No class in session'}), 400
-                
-                if today not in attendance:
-                    attendance[today] = {}
-                
-                class_key = f"{current_class['class']}_{current_class['section']}"
-                if class_key not in attendance[today]:
-                    attendance[today][class_key] = {'automatic': [], 'manual': []}
-                
-                if student_id not in attendance[today][class_key]['automatic']:
-                    attendance[today][class_key]['automatic'].append(student_id)
-                    save_attendance(attendance)
-                    return jsonify({
-                        'success': True, 
-                        'message': f'Attendance marked successfully for {student_name}',
-                        'student_id': student_id,
-                        'student_name': student_name
-                    })
-                else:
-                    return jsonify({
-                        'success': False, 
-                        'message': f'Attendance already marked for {student_name}'
-                    })
-            else:
-                return jsonify({'success': False, 'message': 'Student not found in database'})
-        else:
-            return jsonify({'success': False, 'message': 'Face not recognized or low confidence'})
+    # Record attendance
+    attendance = load_attendance()
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    current_class = get_current_class()
     
-    except Exception as e:
-        print(f"Error in process_attendance: {str(e)}")
-        return jsonify({'success': False, 'message': f'Error processing image: {str(e)}'}), 500
+    if not current_class:
+        return jsonify({'success': False, 'message': 'No class in session'}), 400
+    
+    if today not in attendance:
+        attendance[today] = {}
+    
+    class_key = f"{current_class['class']}_{current_class['section']}"
+    if class_key not in attendance[today]:
+        attendance[today][class_key] = {'automatic': [], 'manual': []}
+    
+    if student_id not in attendance[today][class_key]['automatic']:
+        attendance[today][class_key]['automatic'].append(student_id)
+        save_attendance(attendance)
+        return jsonify({'success': True, 'message': 'Attendance marked successfully'})
+    else:
+        return jsonify({'success': False, 'message': 'Attendance already marked'})
 
 @app.route('/process_manual_attendance', methods=['POST'])
 def process_manual_attendance():
@@ -454,7 +338,8 @@ def view_attendance():
     # Get current date
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
     
-    # Process attendance data to create records
+    # Sample data for the template
+    # In a real app, you would process the attendance data to create these records
     daily_records = []
     students = []
     classes = []
@@ -492,7 +377,7 @@ def view_attendance():
                         'method': 'manual'
                     })
     
-    # Create student attendance data
+    # Create sample student attendance data
     for user_id, user_info in users.items():
         # Count attendance for this student
         present_count = sum(1 for record in daily_records if record['id'] == user_id and record['status'] in ['present', 'manual'])
@@ -510,7 +395,7 @@ def view_attendance():
             'percentage': percentage
         })
     
-    # Create class attendance data
+    # Create sample class attendance data
     for day, day_schedule in schedule.items():
         for time_slot, class_info in day_schedule.items():
             class_name = class_info['class'].replace('C:', '')
@@ -578,7 +463,7 @@ def register_student():
             flash('Registration number already exists', 'danger')
             return redirect(url_for('register_student'))
         
-        # Handle photo uploads
+                # Handle photo uploads
         photos = []
         photo_dir = os.path.join('DATASETS', 'registered_users', registration_number)
         
@@ -615,50 +500,6 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
-# API endpoint to check if a student exists
-@app.route('/api/check_student', methods=['POST'])
-def check_student():
-    data = request.get_json()
-    student_id = data.get('student_id')
-    
-    if not student_id:
-        return jsonify({'exists': False, 'message': 'No student ID provided'})
-    
-    users = load_users()
-    if student_id in users:
-        return jsonify({
-            'exists': True, 
-            'name': users[student_id]['name'],
-            'section': users[student_id]['section']
-        })
-    else:
-        return jsonify({'exists': False, 'message': 'Student not found'})
-
-# API endpoint to get current class info
-@app.route('/api/current_class')
-def api_current_class():
-    current_class = get_current_class()
-    if current_class:
-        return jsonify({
-            'success': True,
-            'class': current_class['class'].replace('C:', ''),
-            'room': current_class['room'].replace('R:', ''),
-            'section': current_class['section'].replace('S:', '')
-        })
-    else:
-        return jsonify({'success': False, 'message': 'No class in session'})
-
-# API endpoint to get student list for a section
-@app.route('/api/students/<section>')
-def api_students(section):
-    users = load_users()
-    section_students = [
-        {'id': user_id, 'name': user_info['name']}
-        for user_id, user_info in users.items()
-        if user_info.get('section') == section
-    ]
-    return jsonify({'students': section_students})
-
 if __name__ == '__main__':
     # Ensure directories exist
     os.makedirs('database', exist_ok=True)
@@ -670,10 +511,4 @@ if __name__ == '__main__':
     if not os.path.exists('database/attendance_records.json'):
         save_attendance({})
     
-    # Check if model exists
-    if not os.path.exists('database/user_recognition_model.h5'):
-        print("Warning: Face recognition model not found at database/user_recognition_model.h5")
-        print("The system will not be able to recognize faces until the model is provided.")
-    
     app.run(debug=True)
-
