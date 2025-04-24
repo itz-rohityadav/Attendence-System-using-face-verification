@@ -35,5 +35,21 @@
             ],
             "manual_entries": []
         }
+    },
+    "2025-04-24": {
+        "C:PEAS02_S:9R11K": {
+            "automatic": [
+                "12219638",
+                "12206751"
+            ],
+            "manual": [],
+            "manual_entries": [
+                {
+                    "student_id": "12345678",
+                    "timestamp": "09:03:15",
+                    "reason": "Face not recognized"
+                }
+            ]
+        }
     }
 }
