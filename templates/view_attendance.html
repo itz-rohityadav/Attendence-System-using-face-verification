@@ -3,1355 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="View and manage attendance records in the Facial Recognition Attendance System">
-    <title>View Attendance | Attendance System</title>
-    
-    <!-- External CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <title>Attendance Reports</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
     <style>
-        :root {
-            --primary-color: #4e73df;
-            --primary-dark: #3a5ccc;
-            --secondary-color: #1cc88a;
-            --secondary-dark: #169b6b;
-            --warning-color: #f6c23e;
-            --danger-color: #e74a3b;
-            --info-color: #36b9cc;
-            --dark-color: #2e3338;
-            --light-color: #f8f9fc;
-            --text-color: #333333;
-            --text-muted: #6c757d;
-            --border-radius: 0.75rem;
-            --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-        
         body {
-            background-color: var(--light-color);
-            font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-            min-height: 100vh;
-            color: var(--text-color);
-            line-height: 1.6;
+            background-color: #f4f6f9;
         }
-        
-        /* Improved focus styles */
-        a:focus, button:focus, input:focus, select:focus {
-            outline: 3px solid rgba(78, 115, 223, 0.5);
-            outline-offset: 2px;
-        }
-        
-        .container-fluid {
-            padding: 1.5rem;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        
-        .page-header {
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .page-title {
-            color: var(--dark-color);
-            font-weight: 700;
-            margin-bottom: 0;
-            font-size: 1.75rem;
-        }
-        
         .card {
             border: none;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            margin-bottom: 1.5rem;
-            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
         .card-header {
-            background-color: #ffffff;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            padding: 1.25rem 1.5rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px 10px 0 0;
         }
-        
-        .card-title {
-            font-weight: 700;
-            margin-bottom: 0;
-            color: var(--dark-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.25rem;
-        }
-        
-        .card-body {
-            padding: 1.5rem;
-        }
-        
-        /* Tab navigation */
-        .nav-tabs {
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-        }
-        
-        .nav-tabs .nav-link {
-            border: none;
-            color: var(--text-muted);
-            font-weight: 600;
-            padding: 0.75rem 1.25rem;
-            border-radius: 0;
-            margin-bottom: -1px;
-        }
-        
-        .nav-tabs .nav-link.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
-            background-color: transparent;
-        }
-        
-        .nav-tabs .nav-link:hover:not(.active) {
-            border-bottom: 3px solid rgba(78, 115, 223, 0.3);
-            color: var(--primary-dark);
-        }
-        
-        /* Date selector */
-        .date-selector {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .date-selector .btn {
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-        }
-        
-        .date-display {
-            font-weight: 700;
-            margin: 0 1rem;
-            min-width: 150px;
-            text-align: center;
-            padding: 0.5rem;
-            background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            color: var(--text-color);
-        }
-        
-        /* Filters */
-        .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .filter-item {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .filter-item .form-label {
-            font-weight: 600;
-            color: var(--dark-color);
-            margin-bottom: 0.5rem;
-        }
-        
-        /* Table styles */
-        .table-container {
-            border-radius: 0.5rem;
-            overflow: hidden;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
-            margin-bottom: 1.5rem;
-            background-color: #ffffff;
-        }
-        
-        .table {
-            margin-bottom: 0;
-        }
-        
         .table thead {
-            background-color: var(--primary-color);
+            background-color: #e9ecef;
         }
-        
-        .table thead th {
-            color: white;
-            font-weight: 600;
-            border: none;
-            padding: 1rem;
-            white-space: nowrap;
-        }
-        
-        .table td {
-            padding: 1rem;
-            vertical-align: middle;
-            color: var(--text-color);
-            border-color: rgba(0,0,0,0.05);
-        }
-        
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(78, 115, 223, 0.05);
-        }
-        
-        /* Status badges */
-        .status-badge {
-            padding: 0.35rem 0.65rem;
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        
-        .present {
-            background-color: rgba(28, 200, 138, 0.1);
-            color: var(--secondary-color);
-        }
-        
-        .absent {
-            background-color: rgba(231, 74, 59, 0.1);
-            color: var(--danger-color);
-        }
-        
-        .manual {
-            background-color: rgba(246, 194, 62, 0.1);
-            color: var(--warning-color);
-        }
-        
-        /* Student info */
-        .student-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .student-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .low-attendance {
+            color: #dc3545;
             font-weight: bold;
-            font-size: 1rem;
-            flex-shrink: 0;
         }
-        
-        .student-details {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .student-name {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            color: var(--dark-color);
-        }
-        
-        .student-id {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        
-        /* Buttons */
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-        }
-        
-        .export-btn {
-            background-color: var(--secondary-color);
-            border: none;
-            color: white;
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .export-btn:hover {
-            background-color: var(--secondary-dark);
-            color: white;
-        }
-        
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-muted);
-        }
-        
-        .empty-state-icon {
-            font-size: 3rem;
-            color: rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
-        }
-        
-        .empty-state-text {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--dark-color);
-        }
-        
-        .empty-state-subtext {
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Loading state */
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(255,255,255,0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            border-radius: var(--border-radius);
-        }
-        
-        .spinner-border {
-            color: var(--primary-color);
-        }
-        
-        /* Pagination */
-        .pagination {
-            justify-content: center;
-            margin-top: 1.5rem;
-        }
-        
-        .page-link {
-            color: var(--primary-color);
-            border-radius: 0.25rem;
-            margin: 0 0.25rem;
-        }
-        
-        .page-item.active .page-link {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        /* Summary cards */
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
         .summary-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            align-items: center;
+            text-align: center;
+            padding: 20px;
         }
-        
-        .summary-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            font-size: 1.5rem;
-            flex-shrink: 0;
+        .summary-card h3 {
+            margin-bottom: 10px;
         }
-        
-        .summary-primary {
-            background-color: rgba(78, 115, 223, 0.1);
-            color: var(--primary-color);
-        }
-        
-        .summary-success {
-            background-color: rgba(28, 200, 138, 0.1);
-            color: var(--secondary-color);
-        }
-        
-        .summary-warning {
-            background-color: rgba(246, 194, 62, 0.1);
-            color: var(--warning-color);
-        }
-        
-        .summary-danger {
-            background-color: rgba(231, 74, 59, 0.1);
-            color: var(--danger-color);
-        }
-        
-        .summary-details {
-            flex: 1;
-        }
-        
-        .summary-title {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 0.25rem;
-        }
-        
-        .summary-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0;
-            color: var(--dark-color);
-        }
-        
-        /* Progress bar */
-        .progress {
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            background-color: rgba(0,0,0,0.05);
-            margin-bottom: 0.25rem;
-        }
-        
-        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .container-fluid {
-                padding: 1rem;
-            }
-            
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .card-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .date-selector {
-                justify-content: center;
-                width: 100%;
-            }
-            
-            .table-responsive {
-                border-radius: 0.5rem;
-                overflow: hidden;
+            .summary-card {
+                margin-bottom: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <header class="page-header">
-            <h1 class="page-title">Attendance Records</h1>
-            <div class="header-actions">
-                <a href="{{ url_for('sections') }}" class="btn btn-outline-primary btn-sm me-2">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Sections
-                </a>
-                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">
-                    <i class="fas fa-sign-out-alt me-1"></i> Logout
-                </a>
-            </div>
-        </header>
-        
-        <ul class="nav nav-tabs" id="attendanceTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="daily-tab" data-bs-toggle="tab" data-bs-target="#daily" type="button" role="tab" aria-controls="daily" aria-selected="true">
-                    <i class="fas fa-calendar-day me-1"></i> Daily View
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="student-tab" data-bs-toggle="tab" data-bs-target="#student" type="button" role="tab" aria-controls="student" aria-selected="false">
-                    <i class="fas fa-user-graduate me-1"></i> Student View
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="class-tab" data-bs-toggle="tab" data-bs-target="#class" type="button" role="tab" aria-controls="class" aria-selected="false">
-                    <i class="fas fa-chalkboard me-1"></i> Class View
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="false">
-                    <i class="fas fa-chart-pie me-1"></i> Summary
-                </button>
-            </li>
-        </ul>
-        
-        <div class="tab-content" id="attendanceTabsContent">
-            <!-- Daily View Tab -->
-            <div class="tab-pane fade show active" id="daily" role="tabpanel" aria-labelledby="daily-tab">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="fas fa-calendar-day me-2"></i> Daily Attendance</h5>
-                        <button class="btn export-btn" id="exportDailyBtn">
-                            <i class="fas fa-file-export me-1"></i> Export to Excel
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="date-selector">
-                            <button class="btn btn-outline-primary" id="prevDay">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <div class="date-display" id="currentDate">Monday, January 1, 2024</div>
-                            <button class="btn btn-outline-primary" id="nextDay">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                            <button class="btn btn-outline-secondary ms-2" id="todayBtn">Today</button>
-                        </div>
-                        
-                        <div class="filters">
-                            <div class="filter-item">
-                                <label for="sectionFilter" class="form-label">Section</label>
-                                <select class="form-select" id="sectionFilter">
-                                    <option value="all">All Sections</option>
-                                    <option value="K22HU">K22HU</option>
-                                    <option value="KO084">KO084</option>
-                                    <option value="9R11K">9R11K</option>
-                                </select>
-                            </div>
-                            <div class="filter-item">
-                                <label for="classFilter" class="form-label">Class</label>
-                                <select class="form-select" id="classFilter">
-                                    <option value="all">All Classes</option>
-                                    <option value="PES319">PES319</option>
-                                    <option value="CSE332">CSE332</option>
-                                    <option value="PSY292">PSY292</option>
-                                </select>
-                            </div>
-                            <div class="filter-item">
-                                <label for="statusFilter" class="form-label">Status</label>
-                                <select class="form-select" id="statusFilter">
-                                    <option value="all">All Status</option>
-                                    <option value="present">Present</option>
-                                    <option value="absent">Absent</option>
-                                    <option value="manual">Manual Entry</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div id="dailyTableContainer" class="table-container">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Student</th>
-                                            <th>Class</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                            <th>Section</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="dailyTableBody">
-                                        <!-- Empty state will show when no data is available -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- Empty state -->
-                            <div id="emptyDailyState" class="empty-state">
-                                <div class="empty-state-icon">
-                                    <i class="fas fa-calendar-day"></i>
-                                </div>
-                                <div class="empty-state-text">No attendance records found</div>
-                                <div class="empty-state-subtext">Try changing the date or filters to see more results</div>
-                                <button class="btn btn-primary" id="addManualRecord">
-                                    <i class="fas fa-plus me-1"></i> Add Manual Record
-                                </button>
-                            </div>
-                            
-                            <!-- Loading state (hidden by default) -->
-                            <div id="loadingDailyState" class="loading-overlay" style="display: none;">
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+    <div class="container mt-5">
+        <!-- Header -->
+        <h1 class="text-center mb-4">Attendance Reports</h1>
+        <p class="text-center text-muted">Date: {{ current_date }}</p>
+
+        <!-- Navigation -->
+        <div class="mb-4">
+            <a href="{{ url_for('sections') }}" class="btn btn-primary">Back to Sections</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger float-end">Logout</a>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="row mb-5">
+            <div class="col-md-3">
+                <div class="card summary-card">
+                    <h3>{{ total_students }}</h3>
+                    <p>Total Students</p>
                 </div>
             </div>
-            
-            <!-- Student View Tab -->
-            <div class="tab-pane fade" id="student" role="tabpanel" aria-labelledby="student-tab">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="fas fa-user-graduate me-2"></i> Student Attendance</h5>
-                        <button class="btn export-btn" id="exportStudentBtn">
-                            <i class="fas fa-file-export me-1"></i> Export to Excel
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="filters">
-                            <div class="filter-item">
-                                <label for="studentSearch" class="form-label">Search Student</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="studentSearch" placeholder="Name or ID">
-                                    <button class="btn btn-outline-secondary" type="button" id="clearStudentSearch">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="filter-item">
-                                <label for="studentSection" class="form-label">Section</label>
-                                <select class="form-select" id="studentSection">
-                                    <option value="all">All Sections</option>
-                                    <option value="K22HU">K22HU</option>
-                                    <option value="KO084">KO084</option>
-                                    <option value="9R11K">9R11K</option>
-                                </select>
-                            </div>
-                            <div class="filter-item">
-                                <label for="dateRange" class="form-label">Date Range</label>
-                                <input type="text" class="form-control" id="dateRange" placeholder="Select date range">
-                            </div>
-                        </div>
-                        
-                        <div id="studentTableContainer" class="table-container">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Student</th>
-                                            <th>Section</th>
-                                            <th>Total Classes</th>
-                                            <th>Present</th>
-                                            <th>Absent</th>
-                                            <th>Attendance %</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="studentTableBody">
-                                        <!-- Empty state will show when no data is available -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- Empty state -->
-                            <div id="emptyStudentState" class="empty-state">
-                                <div class="empty-state-icon">
-                                    <i class="fas fa-user-graduate"></i>
-                                </div>
-                                <div class="empty-state-text">No students found</div>
-                                <div class="empty-state-subtext">Try changing your search criteria or filters</div>
-                            </div>
-                            
-                            <!-- Loading state (hidden by default) -->
-                            <div id="loadingStudentState" class="loading-overlay" style="display: none;">
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+            <div class="col-md-3">
+                <div class="card summary-card">
+                    <h3>{{ avg_attendance }}%</h3>
+                    <p>Average Attendance</p>
                 </div>
             </div>
-            
-            <!-- Class View Tab -->
-            <div class="tab-pane fade" id="class" role="tabpanel" aria-labelledby="class-tab">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="fas fa-chalkboard me-2"></i> Class Attendance</h5>
-                        <button class="btn export-btn" id="exportClassBtn">
-                            <i class="fas fa-file-export me-1"></i> Export to Excel
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="filters">
-                            <div class="filter-item">
-                                <label for="classSelect" class="form-label">Class</label>
-                                <select class="form-select" id="classSelect">
-                                    <option value="">Select Class</option>
-                                    <option value="PES319">PES319</option>
-                                    <option value="CSE332">CSE332</option>
-                                    <option value="PSY292">PSY292</option>
-                                </select>
-                            </div>
-                            <div class="filter-item">
-                                <label for="classSectionSelect" class="form-label">Section</label>
-                                <select class="form-select" id="classSectionSelect">
-                                    <option value="all">All Sections</option>
-                                    <option value="K22HU">K22HU</option>
-                                    <option value="KO084">KO084</option>
-                                    <option value="9R11K">9R11K</option>
-                                </select>
-                            </div>
-                            <div class="filter-item">
-                                <label for="classDateRange" class="form-label">Date Range</label>
-                                <input type="text" class="form-control" id="classDateRange" placeholder="Select date range">
-                            </div>
-                        </div>
-                        
-                        <div id="classTableContainer" class="table-container">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Class</th>
-                                            <th>Section</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Total Students</th>
-                                            <th>Present</th>
-                                            <th>Absent</th>
-                                            <th>Attendance %</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="classTableBody">
-                                        <!-- Empty state will show when no data is available -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- Empty state -->
-                            <div id="emptyClassState" class="empty-state">
-                                <div class="empty-state-icon">
-                                    <i class="fas fa-chalkboard"></i>
-                                </div>
-                                <div class="empty-state-text">No class sessions found</div>
-                                <div class="empty-state-subtext">Try changing your filters or date range</div>
-                            </div>
-                            
-                            <!-- Loading state (hidden by default) -->
-                            <div id="loadingClassState" class="loading-overlay" style="display: none;">
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+            <div class="col-md-3">
+                <div class="card summary-card">
+                    <h3>{{ low_attendance }}</h3>
+                    <p>Low Attendance (<75%)</p>
                 </div>
             </div>
-            
-            <!-- Summary Tab -->
-            <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab">
-                <div class="summary-cards">
-                    <div class="summary-card">
-                        <div class="summary-icon summary-primary">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="summary-details">
-                            <div class="summary-title">Total Students</div>
-                            <div class="summary-value" id="totalStudentsValue">0</div>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-card">
-                        <div class="summary-icon summary-success">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="summary-details">
-                            <div class="summary-title">Average Attendance</div>
-                            <div class="summary-value" id="avgAttendanceValue">0%</div>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-card">
-                        <div class="summary-icon summary-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="summary-details">
-                            <div class="summary-title">Low Attendance</div>
-                            <div class="summary-value" id="lowAttendanceValue">0</div>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-card">
-                        <div class="summary-icon summary-danger">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="summary-details">
-                            <div class="summary-title">Classes Conducted</div>
-                            <div class="summary-value" id="classesConductedValue">0</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title"><i class="fas fa-chart-bar me-2"></i> Attendance Summary</h5>
-                        <button class="btn export-btn" id="exportSummaryBtn">
-                            <i class="fas fa-file-export me-1"></i> Export Report
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="filters">
-                            <div class="filter-item">
-                                <label for="summarySection" class="form-label">Section</label>
-                                <select class="form-select" id="summarySection">
-                                    <option value="all">All Sections</option>
-                                    <option value="K22HU">K22HU</option>
-                                    <option value="KO084">KO084</option>
-                                    <option value="9R11K">9R11K</option>
-                                </select>
-                            </div>
-                            <div class="filter-item">
-                                <label for="summaryClass" class="form-label">Class</label>
-                                <select class="form-select" id="summaryClass">
-                                    <option value="all">All Classes</option>
-                                    <option value="PES319">PES319</option>
-                                    <option value="CSE332">CSE332</option>
-                                    <option value="PSY292">PSY292</option>
-                                </select>
-                            </div>
-                            <div class="filter-item">
-                                <label for="summaryDateRange" class="form-label">Date Range</label>
-                                <input type="text" class="form-control" id="summaryDateRange" placeholder="Select date range">
-                            </div>
-                        </div>
-                        
-                        <div class="row mt-4">
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h6 class="card-title">Attendance by Section</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <canvas id="sectionChart" height="300"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h6 class="card-title">Attendance Trend</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <canvas id="trendChart" height="300"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row mt-4">
-                            <div class="col-md-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h6 class="card-title">Students with Low Attendance</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="lowAttendanceTableContainer" class="table-container">
-                                            <div class="table-responsive">
-                                                <table class="table table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Student</th>
-                                                            <th>Section</th>
-                                                            <th>Total Classes</th>
-                                                            <th>Present</th>
-                                                            <th>Absent</th>
-                                                            <th>Attendance %</th>
-                                                            <th>Actions</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="lowAttendanceTableBody">
-                                                        <!-- Empty state will show when no data is available -->
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            
-                                            <!-- Empty state -->
-                                            <div id="emptyLowAttendanceState" class="empty-state">
-                                                <div class="empty-state-icon">
-                                                    <i class="fas fa-check-circle"></i>
-                                                </div>
-                                                <div class="empty-state-text">No students with low attendance</div>
-                                                <div class="empty-state-subtext">All students are maintaining good attendance</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="col-md-3">
+                <div class="card summary-card">
+                    <h3>{{ classes_conducted }}</h3>
+                    <p>Classes Conducted</p>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Add Record Modal -->
-    <div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addRecordModalLabel">Add Manual Attendance Record</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addRecordForm">
-                        <div class="mb-3">
-                            <label for="studentSelect" class="form-label">Student</label>
-                            <select class="form-select" id="studentSelect" required>
-                                <option value="">Select Student</option>
-                                <option value="1">Rohit Yadav (12206751)</option>                        
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="classSelect" class="form-label">Class</label>
-                            <select class="form-select" id="classSelect" required>
-                                <option value="">Select Class</option>
-                                <option value="PES319">PES319</option>
-                                <option value="CSE332">CSE332</option>
-                                <option value="PSY292">PSY292</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="recordDate" class="form-label">Date</label>
-                            <input type="date" class="form-control" id="recordDate" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="recordTime" class="form-label">Time</label>
-                            <input type="time" class="form-control" id="recordTime" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="recordStatus" class="form-label">Status</label>
-                            <select class="form-select" id="recordStatus" required>
-                                <option value="present">Present</option>
-                                <option value="absent">Absent</option>
-                                <option value="manual">Manual Entry</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="recordNotes" class="form-label">Notes</label>
-                            <textarea class="form-control" id="recordNotes" rows="3" placeholder="Add any additional notes here"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveRecordBtn">Save Record</button>
-                </div>
+
+        <!-- Daily Attendance Records -->
+        <div class="card mb-5">
+            <div class="card-header">
+                <h3 class="mb-0">Daily Attendance Records</h3>
+            </div>
+            <div class="card-body">
+                {% if daily_records %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>Section</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Method</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in daily_records %}
+                        <tr>
+                            <td>{{ record.id }}</td>
+                            <td>{{ record.name }}</td>
+                            <td>{{ record.class }}</td>
+                            <td>{{ record.section }}</td>
+                            <td>{{ record.time }}</td>
+                            <td>{{ record.status | capitalize }}</td>
+                            <td>{{ record.method | capitalize }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No attendance records for today.</p>
+                {% endif %}
             </div>
         </div>
-    </div>
-    
-    <!-- Toast Notifications -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <span id="successToastMessage">Operation completed successfully!</span>
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+
+        <!-- Student Attendance Summary -->
+        <div class="card mb-5">
+            <div class="card-header">
+                <h3 class="mb-0">Student Attendance Summary</h3>
+            </div>
+            <div class="card-body">
+                {% if students %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Section</th>
+                            <th>Total Classes</th>
+                            <th>Present</th>
+                            <th>Absent</th>
+                            <th>Attendance %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr {% if student.percentage < 75 %}class="low-attendance"{% endif %}>
+                            <td>{{ student.id }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.section }}</td>
+                            <td>{{ student.total_classes }}</td>
+                            <td>{{ student.present }}</td>
+                            <td>{{ student.absent }}</td>
+                            <td>{{ student.percentage }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No student records available.</p>
+                {% endif %}
             </div>
         </div>
-        
-        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    <span id="errorToastMessage">An error occurred. Please try again.</span>
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+
+        <!-- Class Attendance Summary -->
+        <div class="card mb-5">
+            <div class="card-header">
+                <h3 class="mb-0">Class Attendance Summary</h3>
+            </div>
+            <div class="card-body">
+                {% if classes %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Section</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Total Students</th>
+                            <th>Present</th>
+                            <th>Absent</th>
+                            <th>Attendance %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for class in classes %}
+                        <tr>
+                            <td>{{ class.name }}</td>
+                            <td>{{ class.section }}</td>
+                            <td>{{ class.date }}</td>
+                            <td>{{ class.time }}</td>
+                            <td>{{ class.total_students }}</td>
+                            <td>{{ class.present }}</td>
+                            <td>{{ class.absent }}</td>
+                            <td>{{ class.percentage }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No class records available.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Low Attendance Students -->
+        <div class="card mb-5">
+            <div class="card-header">
+                <h3 class="mb-0">Students with Low Attendance (<75%)</h3>
+            </div>
+            <div class="card-body">
+                {% if low_attendance_students %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Section</th>
+                            <th>Attendance %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in low_attendance_students %}
+                        <tr class="low-attendance">
+                            <td>{{ student.id }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.section }}</td>
+                            <td>{{ student.percentage }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted">No students with low attendance.</p>
+                {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-        <!-- Scripts -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Initialize toast components
-                const successToast = new bootstrap.Toast(document.getElementById('successToast'));
-                const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
-                
-                // Show success message
-                function showSuccess(message) {
-                    document.getElementById('successToastMessage').textContent = message;
-                    successToast.show();
-                }
-                
-                // Show error message
-                function showError(message) {
-                    document.getElementById('errorToastMessage').textContent = message;
-                    errorToast.show();
-                }
-                
-                // Initialize date display
-                const currentDateEl = document.getElementById('currentDate');
-                const today = new Date();
-                currentDateEl.textContent = formatDate(today);
-                
-                // Format date for display
-                function formatDate(date) {
-                    return date.toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    });
-                }
-                
-                // Previous day button
-                document.getElementById('prevDay').addEventListener('click', function() {
-                    try {
-                        const date = new Date(currentDateEl.textContent);
-                        date.setDate(date.getDate() - 1);
-                        currentDateEl.textContent = formatDate(date);
-                        fetchDailyAttendance(date);
-                    } catch (error) {
-                        showError('Error navigating to previous day');
-                        console.error('Error:', error);
-                    }
-                });
-                
-                // Next day button
-                document.getElementById('nextDay').addEventListener('click', function() {
-                    try {
-                        const date = new Date(currentDateEl.textContent);
-                        date.setDate(date.getDate() + 1);
-                        currentDateEl.textContent = formatDate(date);
-                        fetchDailyAttendance(date);
-                    } catch (error) {
-                        showError('Error navigating to next day');
-                        console.error('Error:', error);
-                    }
-                });
-                
-                // Today button
-                document.getElementById('todayBtn').addEventListener('click', function() {
-                    try {
-                        const today = new Date();
-                        currentDateEl.textContent = formatDate(today);
-                        fetchDailyAttendance(today);
-                    } catch (error) {
-                        showError('Error navigating to today');
-                        console.error('Error:', error);
-                    }
-                });
-                
-                // Fetch daily attendance data
-                function fetchDailyAttendance(date) {
-                    // Show loading state
-                    document.getElementById('loadingDailyState').style.display = 'flex';
-                    document.getElementById('emptyDailyState').style.display = 'none';
-                    document.getElementById('dailyTableBody').innerHTML = '';
-                    
-                    // In a real application, you would fetch data from the server
-                    // For this example, we'll simulate a delay and then show empty state
-                    setTimeout(() => {
-                        // Hide loading state
-                        document.getElementById('loadingDailyState').style.display = 'none';
-                        
-                        // Show empty state since we have no data
-                        document.getElementById('emptyDailyState').style.display = 'block';
-                    }, 800);
-                }
-                
-                // Initialize filters
-                document.getElementById('sectionFilter').addEventListener('change', applyFilters);
-                document.getElementById('classFilter').addEventListener('change', applyFilters);
-                document.getElementById('statusFilter').addEventListener('change', applyFilters);
-                
-                // Apply filters to the table
-                function applyFilters() {
-                    const section = document.getElementById('sectionFilter').value;
-                    const className = document.getElementById('classFilter').value;
-                    const status = document.getElementById('statusFilter').value;
-                    
-                    // Show loading state
-                    document.getElementById('loadingDailyState').style.display = 'flex';
-                    document.getElementById('emptyDailyState').style.display = 'none';
-                    
-                    // In a real application, you would fetch filtered data from the server
-                    // For this example, we'll simulate a delay
-                    setTimeout(() => {
-                        document.getElementById('loadingDailyState').style.display = 'none';
-                        document.getElementById('emptyDailyState').style.display = 'block';
-                        showSuccess('Filters applied successfully');
-                    }, 500);
-                }
-                
-                // Add manual record button
-                document.getElementById('addManualRecord').addEventListener('click', function() {
-                    // Set default date to today
-                    document.getElementById('recordDate').value = new Date().toISOString().split('T')[0];
-                    
-                    // Show the modal
-                    const addModal = new bootstrap.Modal(document.getElementById('addRecordModal'));
-                    addModal.show();
-                });
-                
-                // Save record button
-                document.getElementById('saveRecordBtn').addEventListener('click', function() {
-                    const form = document.getElementById('addRecordForm');
-                    
-                    // Basic form validation
-                    if (!form.checkValidity()) {
-                        form.reportValidity();
-                        return;
-                    }
-                    
-                    // Show loading state
-                    this.disabled = true;
-                    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
-                    
-                    // In a real application, you would send the data to the server
-                    // For this example, we'll simulate a delay
-                    setTimeout(() => {
-                        // Hide the modal
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('addRecordModal'));
-                        modal.hide();
-                        
-                        // Reset button state
-                        this.disabled = false;
-                        this.innerHTML = 'Save Record';
-                        
-                        // Show success message
-                        showSuccess('Record added successfully');
-                        
-                        // Refresh the data
-                        fetchDailyAttendance(new Date(currentDateEl.textContent));
-                    }, 1000);
-                });
-                
-                // Clear student search
-                document.getElementById('clearStudentSearch').addEventListener('click', function() {
-                    document.getElementById('studentSearch').value = '';
-                    // In a real application, you would refresh the student list
-                });
-                
-                // Export buttons
-                document.getElementById('exportDailyBtn').addEventListener('click', function() {
-                    showSuccess('Daily attendance data exported successfully');
-                });
-                
-                document.getElementById('exportStudentBtn').addEventListener('click', function() {
-                    showSuccess('Student attendance data exported successfully');
-                });
-                
-                document.getElementById('exportClassBtn').addEventListener('click', function() {
-                    showSuccess('Class attendance data exported successfully');
-                });
-                
-                document.getElementById('exportSummaryBtn').addEventListener('click', function() {
-                    showSuccess('Summary report exported successfully');
-                });
-                
-                // Initialize charts
-                initializeCharts();
-                
-                function initializeCharts() {
-                    // Section Chart
-                    const sectionCtx = document.getElementById('sectionChart').getContext('2d');
-                    const sectionChart = new Chart(sectionCtx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['K22HU', 'KO084', '9R11K'],
-                            datasets: [{
-                                label: 'Attendance Percentage',
-                                data: [0, 0, 0], // No data initially
-                                backgroundColor: [
-                                    'rgba(78, 115, 223, 0.8)',
-                                    'rgba(28, 200, 138, 0.8)',
-                                    'rgba(54, 185, 204, 0.8)'
-                                ],
-                                borderColor: [
-                                    'rgba(78, 115, 223, 1)',
-                                    'rgba(28, 200, 138, 1)',
-                                    'rgba(54, 185, 204, 1)'
-                                ],
-                                borderWidth: 1,
-                                borderRadius: 5
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    max: 100,
-                                    ticks: {
-                                        callback: function(value) {
-                                            return value + '%';
-                                        }
-                                    }
-                                }
-                            },
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            return context.parsed.y + '% attendance';
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    
-                    // Trend Chart
-                    const trendCtx = document.getElementById('trendChart').getContext('2d');
-                    const trendChart = new Chart(trendCtx, {
-                        type: 'line',
-                        data: {
-                            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
-                            datasets: [{
-                                label: 'K22HU',
-                                data: [0, 0, 0, 0, 0, 0], // No data initially
-                                borderColor: 'rgba(78, 115, 223, 1)',
-                                backgroundColor: 'rgba(78, 115, 223, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            },
-                            {
-                                label: 'KO084',
-                                data: [0, 0, 0, 0, 0, 0], // No data initially
-                                borderColor: 'rgba(28, 200, 138, 1)',
-                                backgroundColor: 'rgba(28, 200, 138, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            },
-                            {
-                                label: '9R11K',
-                                data: [0, 0, 0, 0, 0, 0], // No data initially
-                                borderColor: 'rgba(54, 185, 204, 1)',
-                                backgroundColor: 'rgba(54, 185, 204, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    max: 100,
-                                    ticks: {
-                                        callback: function(value) {
-                                            return value + '%';
-                                        }
-                                    }
-                                }
-                            },
-                            plugins: {
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            return context.dataset.label + ': ' + context.parsed.y + '% attendance';
-                                        }
-                                    }
-                                }
-                            },
-                            interaction: {
-                                mode: 'index',
-                                intersect: false
-                            }
-                        }
-                    });
-                }
-                
-                // Handle tab changes
-                const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
-                tabEls.forEach(tabEl => {
-                    tabEl.addEventListener('shown.bs.tab', function (event) {
-                        const targetId = event.target.getAttribute('data-bs-target').substring(1);
-                        
-                        // Perform actions based on which tab is shown
-                        if (targetId === 'daily') {
-                            // Refresh daily view
-                            const date = new Date(currentDateEl.textContent);
-                            fetchDailyAttendance(date);
-                        } else if (targetId === 'student') {
-                            // Show empty state for student view
-                            document.getElementById('emptyStudentState').style.display = 'block';
-                        } else if (targetId === 'class') {
-                            // Show empty state for class view
-                            document.getElementById('emptyClassState').style.display = 'block';
-                        } else if (targetId === 'summary') {
-                            // Show empty state for low attendance
-                            document.getElementById('emptyLowAttendanceState').style.display = 'block';
-                        }
-                    });
-                });
-                
-                // Initial data load
-                fetchDailyAttendance(today);
-            });
-        </script>
-    </body>
-    </html>
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

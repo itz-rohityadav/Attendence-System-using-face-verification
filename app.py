@@ -335,22 +335,18 @@ def view_attendance():
     attendance = load_attendance()
     users = load_users()
     
-    # Get current date
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
     
-    # Sample data for the template
-    # In a real app, you would process the attendance data to create these records
     daily_records = []
     students = []
     classes = []
     
-    # Process attendance data to create records
+    # Daily attendance records
     if current_date in attendance:
         for class_key, class_attendance in attendance[current_date].items():
             class_name, section_code = class_key.split('_')
             section = section_code.replace('S:', '')
             
-            # Process automatic attendance
             for student_id in class_attendance.get('automatic', []):
                 if student_id in users:
                     daily_records.append({
@@ -363,7 +359,6 @@ def view_attendance():
                         'method': 'face'
                     })
             
-            # Process manual attendance
             for entry in class_attendance.get('manual_entries', []):
                 student_id = entry['student_id']
                 if student_id in users:
@@ -377,35 +372,46 @@ def view_attendance():
                         'method': 'manual'
                     })
     
-    # Create sample student attendance data
+    # Student attendance summary
     for user_id, user_info in users.items():
-        # Count attendance for this student
-        present_count = sum(1 for record in daily_records if record['id'] == user_id and record['status'] in ['present', 'manual'])
-        total_classes = 5  # Sample value
+        section = user_info['section']
+        present_count = 0
+        for date in attendance:
+            for class_key, class_attendance in attendance[date].items():
+                class_name, section_code = class_key.split('_')
+                if section_code == f'S:{section}':
+                    if user_id in class_attendance.get('automatic', []):
+                        present_count += 1
+                    for entry in class_attendance.get('manual_entries', []):
+                        if entry['student_id'] == user_id:
+                            present_count += 1
+        
+        total_classes = 15  # Match report
         absent_count = total_classes - present_count
         percentage = round((present_count / total_classes * 100) if total_classes > 0 else 0)
         
         students.append({
             'id': user_id,
             'name': user_info['name'],
-            'section': user_info['section'],
+            'section': section,
             'total_classes': total_classes,
             'present': present_count,
             'absent': absent_count,
             'percentage': percentage
         })
     
-    # Create sample class attendance data
+    # Class attendance summary
     for day, day_schedule in schedule.items():
         for time_slot, class_info in day_schedule.items():
             class_name = class_info['class'].replace('C:', '')
             section = class_info['section'].replace('S:', '')
+            class_key = f"{class_info['class']}_{class_info['section']}"
             
-            # Count students in this section
             section_students = sum(1 for user in users.values() if user.get('section') == section)
-            
-            # Count present students (sample data)
-            present_students = round(section_students * 0.85)  # 85% attendance rate
+            present_students = 0
+            if current_date in attendance and class_key in attendance[current_date]:
+                present_students = len(attendance[current_date][class_key].get('automatic', [])) + \
+                                   len(attendance[current_date][class_key].get('manual_entries', []))
             absent_students = section_students - present_students
             percentage = round((present_students / section_students * 100) if section_students > 0 else 0)
             
@@ -420,13 +426,11 @@ def view_attendance():
                 'percentage': percentage
             })
     
-    # Summary statistics
     total_students = len(users)
     avg_attendance = round(sum(student['percentage'] for student in students) / len(students) if students else 0)
     low_attendance = sum(1 for student in students if student['percentage'] < 75)
     classes_conducted = len(classes)
     
-    # Students with low attendance
     low_attendance_students = [student for student in students if student['percentage'] < 75]
     
     return render_template('view_attendance.html', 
@@ -494,6 +498,7 @@ def register_student():
         return redirect(url_for('sections'))
     
     return render_template('register.html')
+
 
 @app.route('/logout')
 def logout():

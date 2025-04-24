@@ -691,67 +691,56 @@
                 lastFpsUpdate = now;
             }
             
-            // Start face detection
+            // Simulate face detection (replace with real face recognition)
             function startFaceDetection() {
-                // In a real implementation, this would connect to a face detection API
-                // For this demo, we'll just simulate frame processing
                 setInterval(() => {
                     frameCount++;
+                    // Simulate recognizing a student (replace with actual face-api.js or similar)
+                    if (Math.random() < 0.1) { // 10% chance per frame
+                        const student = {
+                            id: "12219638", // Example: replace with detected ID
+                            name: "Rakshit", // Replace with name from recognition
+                            section: "{{ section }}",
+                            timestamp: new Date().toLocaleTimeString()
+                        };
+                        processAttendance(student);
+                    }
                 }, 16); // ~60fps
             }
             
-            // Show recognition status message
-            function showRecognitionStatus() {
-                recognitionStatus.textContent = "Recognizing...";
-                recognitionStatus.classList.add("show");
-                
-                setTimeout(() => {
-                    recognitionStatus.classList.remove("show");
-                }, 1500);
-            }
-            
-            // Simulate drawing a face box
-            function drawFaceBox() {
-                // Create a face box element
-                const faceBox = document.createElement("div");
-                faceBox.className = "face-box";
-                
-                // Random position within the video
-                const videoWidth = video.offsetWidth;
-                const videoHeight = video.offsetHeight;
-                
-                const width = Math.floor(Math.random() * 100) + 100; // 100-200px
-                const height = Math.floor(Math.random() * 100) + 100; // 100-200px
-                
-                const left = Math.floor(Math.random() * (videoWidth - width));
-                const top = Math.floor(Math.random() * (videoHeight - height));
-                
-                faceBox.style.width = `${width}px`;
-                faceBox.style.height = `${height}px`;
-                faceBox.style.left = `${left}px`;
-                faceBox.style.top = `${top}px`;
-                
-                // Add to camera container
-                document.querySelector(".camera-container").appendChild(faceBox);
-                
-                // Remove after animation
-                setTimeout(() => {
-                    faceBox.remove();
-                }, 2000);
+            // Process attendance (send to backend)
+            async function processAttendance(student) {
+                try {
+                    const response = await fetch("{{ url_for('process_attendance') }}", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            student_id: student.id,
+                            section: student.section
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        recognizedStudents.push(student);
+                        updateRecognizedStudents(student);
+                        showSuccess(result.message);
+                    } else {
+                        showError(result.message);
+                    }
+                } catch (err) {
+                    showError("Failed to process attendance");
+                }
             }
             
             // Update the list of recognized students
             function updateRecognizedStudents(student) {
-                // Hide empty state if this is the first student
                 if (recognizedStudents.length === 1) {
                     emptyState.style.display = 'none';
                 }
                 
-                // Create student card
                 const studentCard = document.createElement("div");
                 studentCard.className = "student-card new-entry";
                 
-                // Determine if this is a manual entry
                 const isManual = student.manual === true;
                 const avatarColor = isManual ? 'style="background-color: var(--warning-color);"' : '';
                 const manualBadge = isManual ? '<span class="badge bg-warning text-dark ms-1">Manual</span>' : '';
@@ -773,10 +762,8 @@
                     </div>
                 `;
                 
-                // Insert at the beginning
                 studentsContainer.insertBefore(studentCard, studentsContainer.firstChild);
                 
-                // Update counters
                 recognizedCount.textContent = recognizedStudents.length;
                 totalCount.textContent = recognizedStudents.length;
                 lastUpdate.textContent = student.timestamp;
@@ -785,29 +772,23 @@
             // Handle stop button
             stopBtn.addEventListener('click', function() {
                 if (confirm("Are you sure you want to stop taking attendance?")) {
-                    // Stop video stream
                     if (video.srcObject) {
                         const tracks = video.srcObject.getTracks();
                         tracks.forEach(track => track.stop());
                     }
-                    
-                    // Redirect to attendance summary
                     window.location.href = "{{ url_for('view_attendance') }}";
                 }
             });
             
             // Handle manual attendance button
             manualBtn.addEventListener('click', function() {
-                // Reset the form
                 document.getElementById('student-id').value = '';
                 document.getElementById('student-name').value = '';
                 document.getElementById('manual-reason').value = '';
                 document.getElementById('other-reason').value = '';
                 document.getElementById('other-reason-container').style.display = 'none';
                 
-                // Check if authentication is required
                 if (manualAttempts > 0 && !isAuthenticated) {
-                    // Show authentication modal instead
                     const authModal = new bootstrap.Modal(document.getElementById('authModal'));
                     authModal.show();
                     return;
@@ -825,7 +806,7 @@
             });
             
             // Handle authentication submit
-            document.getElementById('auth-submit-btn').addEventListener('click', function() {
+            document.getElementById('auth-submit-btn').addEventListener('click', async function() {
                 const username = document.getElementById('admin-username').value;
                 const password = document.getElementById('admin-password').value;
                 
@@ -834,19 +815,13 @@
                     return;
                 }
                 
-                // In a real app, you would verify these credentials against a server
-                // For demo purposes, we'll use a simple check
-                if (username === "admin" && password === "password") {
+                // Verify credentials (align with Flask)
+                if (username === "{{ admin_username }}" && password === "{{ admin_password }}") {
                     isAuthenticated = true;
-                    
-                    // Close auth modal
                     const authModal = bootstrap.Modal.getInstance(document.getElementById('authModal'));
                     authModal.hide();
-                    
-                    // Open manual entry modal
                     const manualModal = new bootstrap.Modal(document.getElementById('manualModal'));
                     manualModal.show();
-                    
                     showSuccess("Authentication successful");
                 } else {
                     showError("Invalid credentials");
@@ -854,14 +829,13 @@
             });
             
             // Handle add manual student button
-            addManualBtn.addEventListener('click', function() {
+            addManualBtn.addEventListener('click', async function() {
                 const studentId = document.getElementById('student-id').value;
                 const studentName = document.getElementById('student-name').value;
                 const studentSection = document.getElementById('student-section').value;
                 const manualReason = document.getElementById('manual-reason').value;
                 const otherReason = document.getElementById('other-reason').value;
                 
-                // Validate form
                 if (!studentId || !studentName || !studentSection || !manualReason) {
                     showError("Please fill in all required fields");
                     return;
@@ -872,38 +846,44 @@
                     return;
                 }
                 
-                // Get the final reason text
                 const finalReason = manualReason === 'Other' ? otherReason : manualReason;
                 
-                // Create the student object
-                const now = new Date();
                 const student = {
                     id: studentId,
                     name: studentName,
                     section: studentSection,
-                    timestamp: now.toLocaleTimeString(),
+                    timestamp: new Date().toLocaleTimeString(),
                     manual: true,
                     reason: finalReason
                 };
                 
-                // Add to recognized list
-                recognizedStudents.push(student);
-                
-                // Update UI
-                updateRecognizedStudents(student);
-                
-                // Increment manual attempts counter
-                manualAttempts++;
-                
-                // Close the modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('manualModal'));
-                modal.hide();
-                
-                // Show success message
-                showSuccess("Student added manually");
-                
-                // In a real app, you would save this to the server
-                console.log("Manual attendance recorded:", student);
+                // Send to backend
+                try {
+                    const response = await fetch("{{ url_for('process_manual_attendance') }}", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            student_id: studentId,
+                            section: studentSection,
+                            reason: finalReason,
+                            admin_password: "{{ admin_password }}", // Use Flask-provided password
+                            requires_auth: manualAttempts > 0
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        recognizedStudents.push(student);
+                        updateRecognizedStudents(student);
+                        manualAttempts++;
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('manualModal'));
+                        modal.hide();
+                        showSuccess(result.message);
+                    } else {
+                        showError(result.message);
+                    }
+                } catch (err) {
+                    showError("Failed to process manual attendance");
+                }
             });
             
             // Handle retry camera button
@@ -913,7 +893,6 @@
             
             // Initialize when page loads
             document.addEventListener('DOMContentLoaded', function() {
-                // Initialize camera
                 initCamera();
             });
         </script>

@@ -1,1 +1,39 @@
-{}
+{
+    "2025-04-21": {
+        "C:PES319_S:K22HU": {
+            "automatic": [
+                "12219638",
+                "12206751"
+            ],
+            "manual_entries": []
+        },
+        "C:CSE332_S:K22HU": {
+            "automatic": [
+                "12219638",
+                "12206751"
+            ],
+            "manual_entries": []
+        }
+    },
+    "2025-04-22": {
+        "C:PES319_S:K22HU": {
+            "automatic": [
+                "12219638",
+                "12206751"
+            ],
+            "manual_entries": []
+        },
+        "C:INT345_S:K22HU": {
+            "automatic": [],
+            "manual_entries": []
+        }
+    },
+    "2025-04-23": {
+        "C:CSE358_S:K22HU": {
+            "automatic": [
+                "12219638"
+            ],
+            "manual_entries": []
+        }
+    }
+}
