@@ -3,8 +3,4 @@ Jinja2==3.1.4
 opencv-python==4.10.0.84
 numpy==1.26.4
 Werkzeug==3.0.4
-<<<<<<< HEAD
-gunicorn==23.0.0
-=======
-gunicorn==23.0.0
->>>>>>> 63c67fe068c7c9f03fe82a69aaf9f2cc07c208c4
+gunicorn==23.0.0 
